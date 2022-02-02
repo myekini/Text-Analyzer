@@ -4,15 +4,14 @@ from PIL import Image, ImageTk
 from tkinter import messagebox, filedialog
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import askokcancel, showinfo, WARNING
+
 import os.path
 import re
-from collections import Counter
 
 
 
 class TextAnalyzer:
     def __init__(self,main) -> None:
-
 
         # initializing some of the attributes
         main.title('Text Analyzer')
@@ -69,6 +68,8 @@ class TextAnalyzer:
         self.browse_text.set('loading')
         self.path = askopenfilename(filetypes=[("Text File", '*.txt')])
         self.EntryText.set(self.path)
+        self.active = True
+        self.saving = True
 
         #preview the text file to be sure its user content
         if self.path:
@@ -76,7 +77,6 @@ class TextAnalyzer:
                 text_box = tk.Text(self.root, height=10, width=20, padx=15, pady=15)
                 text_box.insert(1.0, content.read())
                 text_box.grid(column=1, row=3)
-                text_box.close()
             self.browse_text.set('Browse')
 
     # the proess function
@@ -88,6 +88,7 @@ class TextAnalyzer:
             # loop through each of the lines 
             for text in myFile:
                 text = text.strip()
+                text = re.sub('[^A-Za-z0-9\s]+', '', text)
 
                 #covert to lowercase and split to get individual words
                 text = text.lower()
@@ -109,8 +110,9 @@ class TextAnalyzer:
                         self.wordDict[word] = 1
 
                 
-                self.active = False
-                messagebox.showinfo(title= 'Congratulations', message='File Processed! Kindly SaveFile')
+            self.active = False
+            myFile.close()
+            messagebox.showinfo(title= 'Congratulations', message='File Processed! Kindly SaveFile')
 
 
     # save file function
@@ -152,6 +154,7 @@ class TextAnalyzer:
             
         #setting variables back to default to allow user to process another file
         self.outputFile.close()
+        self.saving = False
         self.wordDict = dict ()
         self.wordCount = 0
         self.charCount = 0
@@ -171,26 +174,6 @@ class TextAnalyzer:
             report = askokcancel(title='Cool', message='You can now exit')
             self.root.destroy()
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
